@@ -1,10 +1,7 @@
-import os
 from .base import ChordExtractor, ChordChange
 import librosa
 import vamp
 from typing import List
-
-# os.environ["VAMP_PATH"] = '/home/ubuntu/nnls-chroma-linux64-v1.1'
 
 
 class Chordino(ChordExtractor):

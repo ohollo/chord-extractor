@@ -5,6 +5,7 @@ from os.path import abspath, join, realpath, isfile
 from timeit import default_timer
 import json
 
+
 os.environ["VAMP_PATH"] = '/home/ubuntu/nnls-chroma-linux64-v1.1'
 
 sample_file_dir = abspath(join(realpath(__file__), '../data'))
@@ -28,11 +29,11 @@ def output_file(chord_list):
     return chord_list
 
 
-
 def test_extract_many():
     _remove_files(out_dir)
     start = default_timer()
     c = Chordino()
+    clear_conversion_cache()
     c.extract_many(sample_files,
                    num_extraction_processes=2,
                    num_conversion_processes=2,
@@ -40,6 +41,7 @@ def test_extract_many():
                    callback=output_file)
     end = default_timer()
     print(end - start)
+
 
 def test_extract():
     start = default_timer()

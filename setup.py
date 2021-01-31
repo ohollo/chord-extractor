@@ -3,9 +3,13 @@ import setuptools
 # with open("README.md", "r", encoding="utf-8") as fh:
 #     long_description = fh.read()
 
+version = {}
+with open("...sample/version.py") as fp:
+    exec(fp.read(), version)
+
 setuptools.setup(
     name="chord-extractor",
-    version="0.0.0",
+    version=version,
     author="Oliver Holloway",
     author_email="author@example.com",
     description="A small example package",
@@ -18,7 +22,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.5',
     install_requires=[
         'librosa', 'vamp'
     ]
