@@ -1,23 +1,26 @@
-from chord_extractor.chordino import Chordino
+from chord_extractor import Chordino, clear_conversion_cache
 import os
-import logging
 from os.path import abspath, join, realpath, isfile
 from timeit import default_timer
 import json
 
 
-os.environ["VAMP_PATH"] = '/home/ubuntu/nnls-chroma-linux64-v1.1'
+# os.environ["VAMP_PATH"] = '/home/ubuntu/nnls-chroma-linux64-v1.1'
 
 sample_file_dir = abspath(join(realpath(__file__), '../data'))
 out_dir = abspath(join(realpath(__file__), '../out'))
+if not os.path.exists(out_dir):
+    os.makedirs(out_dir)
 
 
 def _get_files_in_dir(dir):
     return [abspath(join(dir, f)) for f in os.listdir(dir) if (isfile(join(dir, f)))]
 
+
 def _remove_files(dir):
     for f in _get_files_in_dir(dir):
         os.remove(f)
+
 
 sample_files = _get_files_in_dir(sample_file_dir)
 

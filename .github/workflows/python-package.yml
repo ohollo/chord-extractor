@@ -13,9 +13,11 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      VAMP_PATH: ${{ github.workspace }}/.github/workflows
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2
@@ -23,10 +25,19 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Update apt-get
+      run: sudo apt-get update -y
+    - name: Install sndfile
+      run: sudo apt-get install -y libsndfile1
+    - name: Install timidity
+      run: sudo apt-get install -y timidity
+    - name: Install ffmpeg (for mp3s)
+      run: sudo apt-get install -y ffmpeg
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest
+        python -m pip install numpy
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
@@ -36,4 +47,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        python -m pytest
+        python -m pytest --capture=no --log-cli-level=INFO
