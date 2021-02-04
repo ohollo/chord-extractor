@@ -29,7 +29,7 @@ jobs:
       run: sudo apt-get update -y
     - name: Install sndfile
       run: sudo apt-get install -y libsndfile1
-    - name: Install timidity
+    - name: Install timidity (for midis)
       run: sudo apt-get install -y timidity
     - name: Install ffmpeg (for mp3s)
       run: sudo apt-get install -y ffmpeg

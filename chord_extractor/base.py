@@ -6,7 +6,6 @@ import logging
 import os
 import glob
 
-
 _log = logging.getLogger(__name__)
 _tmp_root = os.getenv('EXTRACTOR_TEMP_FILE_PATH', '/tmp/')
 _tmp_dir = os.path.join(_tmp_root, 'extractor/')
@@ -38,6 +37,7 @@ class ChordExtractor(ABC):
     which can be added to by overriding .convert. This is useful as implementations using .extract
     may take only certain file formats, and integrating conversion logic here enables it to be parallelized.
     """
+
     @abstractmethod
     def extract(self, filepath: str) -> List[ChordChange]:
         """
@@ -60,12 +60,14 @@ class ChordExtractor(ABC):
             return midi_to_wav(path, _tmp_dir)
         return None
 
+    # todo: change tuple of list of chord change into a namedtuple
     def extract_many(self,
                      files: List[str],
-                     callback: Callable[[List[ChordChange], str], None] = None,
+                     callback: Callable[[Tuple[List[ChordChange], str]], None] = None,
                      num_extraction_processes: int = 1,
                      num_conversion_processes: int = 1,
-                     max_files_in_cache: int = 50) -> List[Tuple[List[ChordChange], str]]:
+                     max_files_in_cache: int = 50,
+                     stop_on_error=False) -> List[Tuple[List[ChordChange], str]]:
         """
         Extract chords from a list of files. As opposed to looping over the .extract method, this one gives the option
         to run many extractions in parallel. Furthermore any file conversions that have to be done as a prerequisite
@@ -96,18 +98,40 @@ class ChordExtractor(ABC):
         extractions = []
         while len(extractions) < len(files):
             path, remove_path = extract_q.get()
-            extractions.append(extractor_pool.apply_async(self._consume,
-                                                          args=(path, file_count_q),
-                                                          kwds={'remove_path': remove_path and not not max_files_in_cache},
-                                                          callback=callback))
+            extractions.append((path, extractor_pool.apply_async(self._consume,
+                                                                 args=(path, file_count_q),
+                                                                 kwds={'remove_path': remove_path
+                                                                                      and not not max_files_in_cache,
+                                                                       'stop_on_error': stop_on_error},
+                                                                 callback=callback)))
+
         for c in conversions:
             c.get()
-        res = [a.get() for a in extractions]
+        res = []
+        res = [a[1].get() for a in extractions]
+        # for ext in extractions:
+        #     try:
+        #         res.append(ext[1].get())
+        #     except Exception as e:
+        #         if stop_on_error:
+        #             raise
+        #         logging.warning('Error has been encountered with extracting chords from {}. '
+        #                         'Proceeding to next extraction'.format(ext[0]))
+        #         logging.exception(e)
         return res
 
-    def _consume(self, path, file_count_q, remove_path=False):
-        res = self.extract(path)
-        original_path = file_count_q.get()
+    def _consume(self, path, file_count_q, remove_path=False, stop_on_error=False):
+        res = None
+        try:
+            res = self.extract(path)
+        except Exception as e:
+            if stop_on_error:
+                raise
+            logging.warning('Error has been encountered with extracting chords from {}. '
+                            'Proceeding to next extraction'.format(path))
+            logging.exception(e)
+        finally:
+            file_count_q.get()
         if remove_path:
             os.remove(path)
-        return res, original_path
+        return res, path

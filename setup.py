@@ -1,15 +1,20 @@
 import setuptools
-
 # with open("README.md", "r", encoding="utf-8") as fh:
 #     long_description = fh.read()
 
 version = {}
-with open("...sample/version.py") as fp:
+with open('chord_extractor/version.py') as fp:
     exec(fp.read(), version)
+
+try:
+    import numpy
+except ModuleNotFoundError:
+    raise ModuleNotFoundError('Please install numpy prior to installing this package, so that setup.py of vamp '
+                              'package can run. See README for details')
 
 setuptools.setup(
     name="chord-extractor",
-    version=version,
+    version=version['__version__'],
     author="Oliver Holloway",
     author_email="author@example.com",
     description="A small example package",
@@ -24,6 +29,6 @@ setuptools.setup(
     ],
     python_requires='>=3.5',
     install_requires=[
-        'librosa', 'vamp'
-    ]
+    ],
+    package_data={'chord_extractor': ['lib/nnls-chroma.so']}
 )
