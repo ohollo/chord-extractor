@@ -1,10 +1,9 @@
-from chord_extractor import Chordino, clear_conversion_cache
+from chord_extractor import clear_conversion_cache, LabelledChordSequence
+from chord_extractor.extractors import Chordino
 import os
 from os.path import abspath, join, realpath, isfile
 from timeit import default_timer
 import json
-
-# os.environ["VAMP_PATH"] = '/home/ubuntu/nnls-chroma-linux64-v1.1'
 
 sample_file_dir = abspath(join(realpath(__file__), '../data'))
 out_dir = abspath(join(realpath(__file__), '../out'))
@@ -24,13 +23,12 @@ def _remove_files(dir):
 sample_files = _get_files_in_dir(sample_file_dir)
 
 
-def output_file(chord_list):
-    if chord_list[0] is None:
+def output_file(chord_list: LabelledChordSequence):
+    if chord_list.sequence is None:
         return
-    base = os.path.basename(chord_list[1])
+    base = os.path.basename(chord_list.id)
     with open(os.path.join(out_dir, os.path.splitext(base)[0]), 'w') as f:
         json.dump(chord_list, f)
-    # return chord_list
 
 
 def test_extract_many():
@@ -39,8 +37,8 @@ def test_extract_many():
     c = Chordino()
     clear_conversion_cache()
     res = c.extract_many(sample_files,
-                         num_extraction_processes=2,
-                         num_conversion_processes=2,
+                         num_extractors=2,
+                         num_preprocessors=2,
                          max_files_in_cache=3,
                          callback=output_file)
     end = default_timer()
@@ -55,7 +53,7 @@ def test_extract():
     for s in sample_files:
         if 'error' in s:
             continue
-        conversion = c.convert(s)
+        conversion = c.preprocess(s)
         if conversion:
             c.extract(conversion)
             os.remove(conversion)

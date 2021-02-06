@@ -1,7 +1,6 @@
 import os
 import subprocess
 import logging
-from .exceptions import ConversionError
 
 _log = logging.getLogger(__name__)
 

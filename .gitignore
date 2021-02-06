@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-chord_extractor/lib/
+chord_extractor/_lib/
 lib64/
 parts/
 sdist/

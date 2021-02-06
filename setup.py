@@ -1,6 +1,7 @@
 import setuptools
-# with open("README.md", "r", encoding="utf-8") as fh:
-#     long_description = fh.read()
+
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 version = {}
 with open('chord_extractor/version.py') as fp:
@@ -30,5 +31,5 @@ setuptools.setup(
     python_requires='>=3.5',
     install_requires=[
     ],
-    package_data={'chord_extractor': ['lib/nnls-chroma.so']}
+    package_data={'chord_extractor': ['_lib/nnls-chroma.so']}
 )

@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import List, Callable, NamedTuple, Tuple, Optional
+from typing import List, Callable, Tuple, Optional
 import multiprocessing as mp
 from .converters import midi_to_wav
 import logging
 import os
 import glob
+from outputs import ChordChange, LabelledChordSequence
 
 _log = logging.getLogger(__name__)
 _tmp_root = os.getenv('EXTRACTOR_TEMP_FILE_PATH', '/tmp/')
@@ -17,12 +18,6 @@ def _convert_to_intermediate_file(instance, path, extract_q, file_count_q):
     file_count_q.put(path)
     intermediate_file = getattr(instance, 'convert')(path)
     extract_q.put((intermediate_file, True) if intermediate_file else (path, False))
-
-
-class ChordChange(NamedTuple):
-    """Tuple to represent the time point in a sound file at which a chord changes and which chord it changes to"""
-    chord: str
-    timestamp: float
 
 
 def clear_conversion_cache():
@@ -47,10 +42,14 @@ class ChordExtractor(ABC):
         :return: List of chord changes for the sound file
         """
 
-    @staticmethod
-    def convert(path: str) -> Optional[str]:
+    def preprocess(self, path: str) -> Optional[str]:
         """
-        Convert file at the path to a wav file if it has a file format which can be converted (currently midi)
+        Run any preprocessing steps based on the location path of the sound file provided. Primarily this is used to
+        convert the file at the path, based on its file extension to a file usable by the extract method. However, an
+        override of this method can perform any logic that may benefit from multiprocessing available in extract_many.
+
+        In this implementation any midi files are converted to wav files which are placed in a temporary directory
+        (conversion cache).
 
         :param path: Path to the file
         :return: Return file path to output file of conversion if conversion has happened, else None
@@ -60,14 +59,13 @@ class ChordExtractor(ABC):
             return midi_to_wav(path, _tmp_dir)
         return None
 
-    # todo: change tuple of list of chord change into a namedtuple
     def extract_many(self,
                      files: List[str],
-                     callback: Callable[[Tuple[List[ChordChange], str]], None] = None,
-                     num_extraction_processes: int = 1,
-                     num_conversion_processes: int = 1,
+                     callback: Callable[[LabelledChordSequence], None] = None,
+                     num_extractors: int = 1,
+                     num_preprocessors: int = 1,
                      max_files_in_cache: int = 50,
-                     stop_on_error=False) -> List[Tuple[List[ChordChange], str]]:
+                     stop_on_error=False) -> List[LabelledChordSequence]:
         """
         Extract chords from a list of files. As opposed to looping over the .extract method, this one gives the option
         to run many extractions in parallel. Furthermore any file conversions that have to be done as a prerequisite
@@ -81,8 +79,8 @@ class ChordExtractor(ABC):
         :param files: List of paths to files we wish to extract chords for
         :param callback: An optional callable that is called when chords have been extracted from a particular file.
          This takes a tuple with the extraction results and original filepath of the extracted file as argument.
-        :param num_extraction_processes: Max number of extraction processes to run in parallel
-        :param num_conversion_processes: Max number of conversion processes to run in parallel
+        :param num_extractors: Max number of extraction processes to run in parallel
+        :param num_preprocessors: Max number of conversion processes to run in parallel
         :param max_files_in_cache: Limit of number of files for a single extract_many run to have in the temporary file
          cache (for file conversions) at any one time. If 0, there is no limit.
         :return: List of tuples, each with the extraction results and original filepath
@@ -90,8 +88,8 @@ class ChordExtractor(ABC):
         m = mp.Manager()
         extract_q = m.Queue()
         file_count_q = m.Queue(maxsize=max_files_in_cache)
-        conversion_pool = mp.Pool(processes=num_conversion_processes)
-        extractor_pool = mp.Pool(processes=num_extraction_processes)
+        conversion_pool = mp.Pool(processes=num_preprocessors)
+        extractor_pool = mp.Pool(processes=num_extractors)
         conversions = [conversion_pool.apply_async(_convert_to_intermediate_file,
                                                    args=(self, file, extract_q, file_count_q))
                        for file in files]
@@ -107,20 +105,10 @@ class ChordExtractor(ABC):
 
         for c in conversions:
             c.get()
-        res = []
         res = [a[1].get() for a in extractions]
-        # for ext in extractions:
-        #     try:
-        #         res.append(ext[1].get())
-        #     except Exception as e:
-        #         if stop_on_error:
-        #             raise
-        #         logging.warning('Error has been encountered with extracting chords from {}. '
-        #                         'Proceeding to next extraction'.format(ext[0]))
-        #         logging.exception(e)
         return res
 
-    def _consume(self, path, file_count_q, remove_path=False, stop_on_error=False):
+    def _consume(self, path, file_count_q, remove_path=False, stop_on_error=False) -> LabelledChordSequence:
         res = None
         try:
             res = self.extract(path)
@@ -134,4 +122,4 @@ class ChordExtractor(ABC):
             file_count_q.get()
         if remove_path:
             os.remove(path)
-        return res, path
+        return LabelledChordSequence(id=path, sequence=res)
