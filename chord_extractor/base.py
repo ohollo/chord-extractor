@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import List, Callable, Tuple, Optional
+from typing import List, Callable, Optional
 import multiprocessing as mp
 from .converters import midi_to_wav
 import logging
 import os
 import glob
-from outputs import ChordChange, LabelledChordSequence
+from .outputs import ChordChange, LabelledChordSequence
 
 _log = logging.getLogger(__name__)
 _tmp_root = os.getenv('EXTRACTOR_TEMP_FILE_PATH', '/tmp/')
