@@ -25,6 +25,11 @@ used, e.g. if you are using another OS.
 - `pip install numpy` - numpy needs to be installed in your Python environment *prior* to installing chord-extractor. 
 This is necessary as one of the package dependencies (vamp) requires it in its setup.py.
   
+Included in the installation is a compiled library for Chordino. If you are using Linux 64-bit, chord-extractor will
+default to using this binary. If you require a [different version of the binary](http://www.isophonics.net/nnls-chroma), 
+for example if using another OS, please set the environment variable VAMP_PATH to point to the directory with the 
+downloaded binary. 
+  
 ## Usage
 
 Extract chords from a single file:
@@ -55,12 +60,14 @@ files_to_extract_from = [
 ]
 
 def save_to_db_cb(results: LabelledChordSequence):
-    # Every time one of the files has had chords extracted, receive the chords here along with the name 
-    # of the original file and then run some logic here, e.g. to save the latest data to DB
+    # Every time one of the files has had chords extracted, receive the chords here 
+    # along with the name of the original file and then run some logic here, e.g. to 
+    # save the latest data to DB
 
 chordino = Chordino(params={'rollon': 1})
 
-# Optionally clear cache of converted files (e.g. midi files that have been converted to wav for extraction)
+# Optionally clear cache of converted files (e.g. midi files that have been converted 
+# to wav for extraction)
 clear_conversion_cache()
 res = chordino.extract_many(files_to_extract_from, callback=save_to_db_cb, num_extractors=2,
                             num_preprocessors=2, max_files_in_cache=10, stop_on_error=False)
@@ -81,12 +88,16 @@ class MyExtractor(ChordExtractor):
         conversion_path = super().preprocess(path)
         ext = os.path.splitext(path)[1]
         if ext in ['.newfmt']:
-          conversion_path = # preprocess file at path, convert to .newfmt and have path to new temporary file
+          # preprocess file at path, convert to .newfmt and have path to new temporary file
+          conversion_path = ####
         return conversion_path
     
     def extract(self, filepath: str) -> List[ChordChange]:
         # Custom extraction logic using self.some_new_setting perhaps
 ```
 
-See technical documentation for more details.
+## Contributing
+
+Contributions, whether adding new functionality or raising an issue, are always welcome. You can see instructions on
+how to contribute in the [CONTRIBUTING.md](https://github.com/ohollo/chord-extractor/blob/master/CONTRIBUTING.md).
 
