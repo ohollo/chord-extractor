@@ -2,7 +2,8 @@ from chord_extractor.base import ChordExtractor, ChordChange
 import librosa
 import vamp
 from typing import List
-import logging, os, sys
+import os
+import sys
 from pkg_resources import resource_filename
 
 if not os.getenv('VAMP_PATH') and sys.platform == 'linux' and sys.maxsize > 2**32:

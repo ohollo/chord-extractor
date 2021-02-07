@@ -1,4 +1,4 @@
-from typing import NamedTuple, List
+from typing import NamedTuple, List, Optional
 
 
 class ChordChange(NamedTuple):
@@ -10,4 +10,4 @@ class ChordChange(NamedTuple):
 class LabelledChordSequence(NamedTuple):
     """Output of chord extractions with id suitable for when running using asynchronous processes"""
     id: str
-    sequence: List[ChordChange]
+    sequence: Optional[List[ChordChange]]

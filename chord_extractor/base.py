@@ -16,7 +16,7 @@ if not os.path.exists(_tmp_dir):
 
 def _convert_to_intermediate_file(instance, path, extract_q, file_count_q):
     file_count_q.put(path)
-    intermediate_file = getattr(instance, 'convert')(path)
+    intermediate_file = getattr(instance, 'preprocess')(path)
     extract_q.put((intermediate_file, True) if intermediate_file else (path, False))
 
 
@@ -83,6 +83,8 @@ class ChordExtractor(ABC):
         :param num_preprocessors: Max number of conversion processes to run in parallel
         :param max_files_in_cache: Limit of number of files for a single extract_many run to have in the temporary file
          cache (for file conversions) at any one time. If 0, there is no limit.
+        :param stop_on_error: If True, an error encountered during a single extraction will stop the overall
+         extraction multiprocessing, else an error will cause a None result to be returned for a particular input file.
         :return: List of tuples, each with the extraction results and original filepath
         """
         m = mp.Manager()

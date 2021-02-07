@@ -1,4 +1,6 @@
 # chord-extractor
+![Python package](https://github.com/ohollo/chord-extractor/workflows/Python%20package/badge.svg)
+
 Python library for extracting chord sequences from sound files of multiple formats with the option of
 leveraging multiprocessing to source data from many files quickly. The extraction process
 wraps [Chordino](http://www.isophonics.net/nnls-chroma) but is extensible to easily incorporate 
