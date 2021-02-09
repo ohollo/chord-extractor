@@ -27,6 +27,11 @@ used, e.g. if you are using another OS.
 - `pip install numpy` - numpy needs to be installed in your Python environment *prior* to installing chord-extractor. 
 This is necessary as one of the package dependencies (vamp) requires it in its setup.py.
   
+After that you are ready to run
+```commandline
+pip install chord-extractor
+```
+  
 Included in the installation is a compiled library for Chordino. If you are using Linux 64-bit, chord-extractor will
 default to using this binary. If you require a [different version of the binary](http://www.isophonics.net/nnls-chroma), 
 for example if using another OS, please set the environment variable VAMP_PATH to point to the directory with the 
@@ -39,11 +44,13 @@ Extract chords from a single file:
 ```python
 from chord_extractor.extractors import Chordino
 
-chordino = Chordino(roll_on=1)
+# Setup Chordino with one of several parameters that can be passed
+chordino = Chordino(roll_on=1)  
 
 # Optional, only if we need to extract from a file that isn't accepted by librosa
 conversion_file_path = chordino.preprocess('/some_path/some_song.mid')
 
+# Run extraction
 chords = chordino.extract(conversion_file_path)
 ```
 
@@ -66,11 +73,12 @@ def save_to_db_cb(results: LabelledChordSequence):
     # along with the name of the original file and then run some logic here, e.g. to 
     # save the latest data to DB
 
-chordino = Chordino(roll_on=1)
+chordino = Chordino()
 
-# Optionally clear cache of converted files (e.g. midi files that have been converted 
-# to wav for extraction)
+# Optionally clear cache of file conversions (e.g. wav files that have been converted from midi)
 clear_conversion_cache()
+
+# Run bulk extraction
 res = chordino.extract_many(files_to_extract_from, callback=save_to_db_cb, num_extractors=2,
                             num_preprocessors=2, max_files_in_cache=10, stop_on_error=False)
 ```
@@ -97,6 +105,8 @@ class MyExtractor(ChordExtractor):
     def extract(self, filepath: str) -> List[ChordChange]:
         # Custom extraction logic using self.some_new_setting perhaps
 ```
+
+For more documentation see [here](https://ohollo.github.io/chord-extractor/).
 
 ## Contributing
 

@@ -2,7 +2,7 @@ name: Release Python Package
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   deploy:
@@ -12,11 +12,17 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: '3.8'
+    - name: Update apt-get
+      run: sudo apt-get update -y
+    - name: Install sndfile
+      run: sudo apt-get install -y libsndfile1
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install numpy
         pip install setuptools wheel twine sphinx
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Compile docs
       run: |
         cd docs
@@ -32,4 +38,4 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@4.0.0
       with:
         branch: gh-pages
-        folder: docs
+        folder: docs/_build/html

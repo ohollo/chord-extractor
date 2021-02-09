@@ -6,6 +6,9 @@ from enum import Enum
 import os
 import sys
 from pkg_resources import resource_filename
+import logging
+
+_log = logging.getLogger(__name__)
 
 if not os.getenv('VAMP_PATH') and sys.platform == 'linux' and sys.maxsize > 2**32:
     os.environ['VAMP_PATH'] = os.path.dirname(resource_filename('chord_extractor', '_lib/nnls-chroma.so'))
@@ -71,6 +74,7 @@ class Chordino(ChordExtractor):
         :return: List of chord changes for the sound file
         """
         data, rate = librosa.load(file, **kwargs)
+        _log.info('Submitting {} to Chordino for chord extraction.')
         chords = vamp.collect(data, rate, 'nnls-chroma:chordino', parameters=self._params)
         return [ChordChange(timestamp=float(change['timestamp']),
                             chord=change['label']) for change in chords['list']]

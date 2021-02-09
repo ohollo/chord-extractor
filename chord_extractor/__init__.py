@@ -33,8 +33,7 @@ Extract from many files with multiprocessing::
 
     chordino = Chordino(roll_on=1)
 
-    # Optionally clear cache of converted files (e.g. midi files that have been converted
-    # to wav for extraction)
+    # Optionally clear cache of file conversions (e.g. wav files that have been converted from midi)
     clear_conversion_cache()
     res = chordino.extract_many(files_to_extract_from, callback=save_to_db_cb, num_extractors=2,
                                 num_preprocessors=2, max_files_in_cache=10, stop_on_error=False)

@@ -21,7 +21,7 @@ def _convert_to_intermediate_file(instance, path, extract_q, file_count_q):
 
 
 def clear_conversion_cache():
-    """Clear the temporary directory containing sound file conversions """
+    """Clear the temporary directory containing sound file conversions."""
     files = glob.glob(os.path.join(_tmp_dir, '*'))
     for f in files:
         os.remove(f)
@@ -75,7 +75,8 @@ class ChordExtractor(ABC):
         Files can be a mix of different file formats. If a file is of a format that needs to be converted in
         preprocessing, the conversion will be passed to a queue for extraction. Otherwise the original file will be
         queued. Any conversions are cached in a temporary folder specified using the environment variable
-        EXTRACTOR_TEMP_FILE_PATH (/tmp if not specified).
+        EXTRACTOR_TEMP_FILE_PATH (/tmp if not specified). Note, if in any subsequent extract runs, an existing file
+        conversion is find in the temporary directory, a new conversion will be skipped and the existing one used.
 
         :param files: List of paths to files we wish to extract chords for
         :param callback: An optional callable that is called when chords have been extracted from a particular file.
@@ -120,9 +121,9 @@ class ChordExtractor(ABC):
         except Exception as e:
             if stop_on_error:
                 raise
-            logging.warning('Error has been encountered with extracting chords from {}. '
-                            'Proceeding to next extraction'.format(path))
-            logging.exception(e)
+            _log.warning('Error has been encountered with extracting chords from {}. '
+                         'Proceeding to next extraction'.format(path))
+            _log.exception(e)
         finally:
             file_count_q.get()
         if remove_path:
