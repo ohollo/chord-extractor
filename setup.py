@@ -7,12 +7,6 @@ version = {}
 with open('chord_extractor/version.py') as fp:
     exec(fp.read(), version)
 
-try:
-    import numpy
-except ModuleNotFoundError:
-    raise ModuleNotFoundError('Please install numpy prior to installing this package, so that setup.py of vamp '
-                              'package can run. See README for details')
-
 setuptools.setup(
     name="chord-extractor",
     version=version['__version__'],
@@ -25,11 +19,12 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.5',
+    python_requires='>=3.6,<3.9',
     install_requires=[
+        'librosa', 'vamp'
     ],
     package_data={'chord_extractor': ['_lib/nnls-chroma.so']}
 )

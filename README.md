@@ -39,7 +39,7 @@ Extract chords from a single file:
 ```python
 from chord_extractor.extractors import Chordino
 
-chordino = Chordino(params={'rollon': 1})
+chordino = Chordino(roll_on=1)
 
 # Optional, only if we need to extract from a file that isn't accepted by librosa
 conversion_file_path = chordino.preprocess('/some_path/some_song.mid')
@@ -66,7 +66,7 @@ def save_to_db_cb(results: LabelledChordSequence):
     # along with the name of the original file and then run some logic here, e.g. to 
     # save the latest data to DB
 
-chordino = Chordino(params={'rollon': 1})
+chordino = Chordino(roll_on=1)
 
 # Optionally clear cache of converted files (e.g. midi files that have been converted 
 # to wav for extraction)

@@ -1,3 +1,7 @@
-from .chordino import Chordino
+"""
+Module containing specific ChordExtractor implementations, and any input enums that they use
+"""
 
-__all__ = ['Chordino']
+from .chordino import Chordino, TuningMode, ChromaNormalization
+
+__all__ = ['Chordino', 'TuningMode', 'ChromaNormalization']
