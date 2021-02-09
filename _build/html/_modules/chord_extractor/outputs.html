@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chord_extractor.outputs &#8212; chord-extractor  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">chord-extractor  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">chord_extractor.outputs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for chord_extractor.outputs</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+
+<div class="viewcode-block" id="ChordChange"><a class="viewcode-back" href="../../index.html#chord_extractor.ChordChange">[docs]</a><span class="k">class</span> <span class="nc">ChordChange</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tuple to represent the time point in a sound file at which a chord changes and which chord it changes to.</span>
+
+<span class="sd">    The string notation used in the chord string is standard notation (and that used by Chordino). Examples include</span>
+<span class="sd">    Emaj7, Dm, Cb7, where maj = major, m = minor, b = flat etc. Note that if &#39;N&#39; is given, this denotes no chord, e.g.</span>
+<span class="sd">    if a part of the sound file is non-musical.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">chord</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+<div class="viewcode-block" id="LabelledChordSequence"><a class="viewcode-back" href="../../index.html#chord_extractor.LabelledChordSequence">[docs]</a><span class="k">class</span> <span class="nc">LabelledChordSequence</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Output of chord extractions with identifier, suitable for when running using asynchronous processes. The</span>
+<span class="sd">    sequence may be None if no result was returned for that particular id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">sequence</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ChordChange</span><span class="p">]]</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">chord-extractor  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">chord_extractor.outputs</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Oliver Holloway.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>
