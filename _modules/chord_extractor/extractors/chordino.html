@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chord_extractor.extractors.chordino &#8212; chord-extractor  documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">chord-extractor  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">chord_extractor.extractors.chordino</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for chord_extractor.extractors.chordino</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">chord_extractor.base</span> <span class="kn">import</span> <span class="n">ChordExtractor</span><span class="p">,</span> <span class="n">ChordChange</span>
+<span class="kn">import</span> <span class="nn">librosa</span>
+<span class="kn">import</span> <span class="nn">vamp</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;VAMP_PATH&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;linux&#39;</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;VAMP_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;chord_extractor&#39;</span><span class="p">,</span> <span class="s1">&#39;_lib/nnls-chroma.so&#39;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="TuningMode"><a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.TuningMode">[docs]</a><span class="k">class</span> <span class="nc">TuningMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Options for Tuning Mode parameter (see Chordino doc)&quot;&quot;&quot;</span>
+    <span class="n">GLOBAL</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">LOCAL</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="ChromaNormalization"><a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.ChromaNormalization">[docs]</a><span class="k">class</span> <span class="nc">ChromaNormalization</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Options for Chroma Normalization parameter (see Chordino doc)&quot;&quot;&quot;</span>
+    <span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">MAX</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="mi">3</span></div>
+
+
+<div class="viewcode-block" id="Chordino"><a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.Chordino">[docs]</a><span class="k">class</span> <span class="nc">Chordino</span><span class="p">(</span><span class="n">ChordExtractor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for extracting chords using Chordino (http://www.isophonics.net/nnls-chroma). All parameters are those</span>
+<span class="sd">    passed to Chordino. You can see further details of what they mean in the</span>
+<span class="sd">    Chordino -&gt; Parameters section in the above link. The defaults here are the suggested parameter settings for</span>
+<span class="sd">    when extracting from a generic pop song. See the link for more recommended settings.</span>
+
+<span class="sd">    :param use_nnls: Use approximate transcription (NNLS)</span>
+<span class="sd">    :param roll_on: Spectral roll-on (range: 0 - 5)</span>
+<span class="sd">    :param tuning_mode: Tuning mode</span>
+<span class="sd">    :param spectral_whitening: Spectral whitening (range: 0 - 1)</span>
+<span class="sd">    :param spectral_shape: Spectral shape (range: 0.5 - 0.9)</span>
+<span class="sd">    :param boost_n_likelihood: Boost likelihood of the N (no chord) label</span>
+<span class="sd">    :param kwargs: Any other parameters that may become available to the chordino vamp plugin. Param keys are the</span>
+<span class="sd">     vamp identifier.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">use_nnls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">roll_on</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="n">tuning_mode</span><span class="p">:</span> <span class="n">TuningMode</span> <span class="o">=</span> <span class="n">TuningMode</span><span class="o">.</span><span class="n">GLOBAL</span><span class="p">,</span>
+                 <span class="n">spectral_whitening</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="n">spectral_shape</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+                 <span class="n">boost_n_likelihood</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;useNNLS&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">use_nnls</span><span class="p">),</span>
+            <span class="s1">&#39;rollon&#39;</span><span class="p">:</span> <span class="n">roll_on</span><span class="p">,</span>
+            <span class="s1">&#39;tuningmode&#39;</span><span class="p">:</span> <span class="n">tuning_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s1">&#39;whitening&#39;</span><span class="p">:</span> <span class="n">spectral_whitening</span><span class="p">,</span>
+            <span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">spectral_shape</span><span class="p">,</span>
+            <span class="s1">&#39;boostn&#39;</span><span class="p">:</span> <span class="n">boost_n_likelihood</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Chordino.extract"><a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.Chordino.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ChordChange</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract chord changes from a particular file. The file is loaded into librosa, therefore takes sound files</span>
+<span class="sd">        supported by librosa (which uses audioread and soundfile). This includes .wav, .mp3, .ogg and others.</span>
+
+<span class="sd">        :param file: Absolute file path to the relevant file. A file like object is also acceptable.</span>
+<span class="sd">        :param kwargs: Keyword arguments for librosa.load</span>
+<span class="sd">         (see https://librosa.org/doc/0.7.0/generated/librosa.core.load.html)</span>
+<span class="sd">        :return: List of chord changes for the sound file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">rate</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Submitting </span><span class="si">{}</span><span class="s1"> to Chordino for chord extraction.&#39;</span><span class="p">)</span>
+        <span class="n">chords</span> <span class="o">=</span> <span class="n">vamp</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="s1">&#39;nnls-chroma:chordino&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ChordChange</span><span class="p">(</span><span class="n">timestamp</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">change</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]),</span>
+                            <span class="n">chord</span><span class="o">=</span><span class="n">change</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">change</span> <span class="ow">in</span> <span class="n">chords</span><span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">]]</span></div></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">chord-extractor  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">chord_extractor.extractors.chordino</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Oliver Holloway.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>
