@@ -1,18 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>chord_extractor.base &#8212; chord-extractor  documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -27,8 +27,7 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">chord-extractor  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">chord_extractor.base</a></li> 
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -61,7 +60,7 @@
 
 
 <div class="viewcode-block" id="clear_conversion_cache"><a class="viewcode-back" href="../../index.html#chord_extractor.clear_conversion_cache">[docs]</a><span class="k">def</span> <span class="nf">clear_conversion_cache</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Clear the temporary directory containing sound file conversions &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Clear the temporary directory containing sound file conversions.&quot;&quot;&quot;</span>
     <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_tmp_dir</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
@@ -115,7 +114,8 @@
 <span class="sd">        Files can be a mix of different file formats. If a file is of a format that needs to be converted in</span>
 <span class="sd">        preprocessing, the conversion will be passed to a queue for extraction. Otherwise the original file will be</span>
 <span class="sd">        queued. Any conversions are cached in a temporary folder specified using the environment variable</span>
-<span class="sd">        EXTRACTOR_TEMP_FILE_PATH (/tmp if not specified).</span>
+<span class="sd">        EXTRACTOR_TEMP_FILE_PATH (/tmp if not specified). Note, if in any subsequent extract runs, an existing file</span>
+<span class="sd">        conversion is find in the temporary directory, a new conversion will be skipped and the existing one used.</span>
 
 <span class="sd">        :param files: List of paths to files we wish to extract chords for</span>
 <span class="sd">        :param callback: An optional callable that is called when chords have been extracted from a particular file.</span>
@@ -160,9 +160,9 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">stop_on_error</span><span class="p">:</span>
                 <span class="k">raise</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Error has been encountered with extracting chords from </span><span class="si">{}</span><span class="s1">. &#39;</span>
-                            <span class="s1">&#39;Proceeding to next extraction&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Error has been encountered with extracting chords from </span><span class="si">{}</span><span class="s1">. &#39;</span>
+                         <span class="s1">&#39;Proceeding to next extraction&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">file_count_q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">remove_path</span><span class="p">:</span>
@@ -170,7 +170,6 @@
         <span class="k">return</span> <span class="n">LabelledChordSequence</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="n">res</span><span class="p">)</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -200,13 +199,12 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">chord-extractor  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">chord_extractor.base</a></li> 
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Oliver Holloway.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.0.
     </div>
   </body>
 </html>
