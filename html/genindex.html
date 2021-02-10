@@ -1,18 +1,19 @@
 
+
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; chord-extractor  documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -26,8 +27,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">chord-extractor  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Index</a></li> 
+        <li class="nav-item nav-item-0"><a href="index.html">chord-extractor  documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -44,7 +44,6 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
- | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -53,20 +52,21 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="index.html#chord_extractor.ChordChange.chord">chord (chord_extractor.ChordChange attribute)</a>
+      <li><a href="index.html#chord_extractor.ChordChange.chord">chord() (chord_extractor.ChordChange property)</a>
 </li>
-      <li>
-    chord_extractor
-
-      <ul>
-        <li><a href="index.html#module-chord_extractor">module</a>
+      <li><a href="index.html#module-chord_extractor">chord_extractor (module)</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="index.html#module-chord_extractor.extractors">chord_extractor.extractors (module)</a>
+</li>
       <li><a href="index.html#chord_extractor.ChordChange">ChordChange (class in chord_extractor)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="index.html#chord_extractor.ChordExtractor">ChordExtractor (class in chord_extractor)</a>
+</li>
+      <li><a href="index.html#chord_extractor.extractors.Chordino">Chordino (class in chord_extractor.extractors)</a>
+</li>
+      <li><a href="index.html#chord_extractor.extractors.ChromaNormalization">ChromaNormalization (class in chord_extractor.extractors)</a>
 </li>
       <li><a href="index.html#chord_extractor.clear_conversion_cache">clear_conversion_cache() (in module chord_extractor)</a>
 </li>
@@ -77,7 +77,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="index.html#chord_extractor.ChordExtractor.extract">extract() (chord_extractor.ChordExtractor method)</a>
+
+      <ul>
+        <li><a href="index.html#chord_extractor.extractors.Chordino.extract">(chord_extractor.extractors.Chordino method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="index.html#chord_extractor.ChordExtractor.extract_many">extract_many() (chord_extractor.ChordExtractor method)</a>
@@ -88,7 +92,7 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="index.html#chord_extractor.LabelledChordSequence.id">id (chord_extractor.LabelledChordSequence attribute)</a>
+      <li><a href="index.html#chord_extractor.LabelledChordSequence.id">id() (chord_extractor.LabelledChordSequence property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -98,19 +102,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="index.html#chord_extractor.LabelledChordSequence">LabelledChordSequence (class in chord_extractor)</a>
 </li>
-  </ul></td>
-</tr></table>
-
-<h2 id="M">M</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    module
-
-      <ul>
-        <li><a href="index.html#module-chord_extractor">chord_extractor</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -125,7 +116,7 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="index.html#chord_extractor.LabelledChordSequence.sequence">sequence (chord_extractor.LabelledChordSequence attribute)</a>
+      <li><a href="index.html#chord_extractor.LabelledChordSequence.sequence">sequence() (chord_extractor.LabelledChordSequence property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -133,14 +124,17 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="index.html#chord_extractor.ChordChange.timestamp">timestamp (chord_extractor.ChordChange attribute)</a>
+      <li><a href="index.html#chord_extractor.ChordChange.timestamp">timestamp() (chord_extractor.ChordChange property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="index.html#chord_extractor.extractors.TuningMode">TuningMode (class in chord_extractor.extractors)</a>
 </li>
   </ul></td>
 </tr></table>
 
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -169,13 +163,12 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">chord-extractor  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Index</a></li> 
+        <li class="nav-item nav-item-0"><a href="index.html">chord-extractor  documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Oliver Holloway.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.0.
     </div>
   </body>
 </html>
