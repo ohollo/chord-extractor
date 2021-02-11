@@ -13,6 +13,9 @@ Simple usage::
     conversion_file_path = chordino.preprocess('/some_path/some_song.mid')
 
     chords = chordino.extract(conversion_file_path)
+    # => [  ChordChange(chord='N', timestamp=0.371519274),
+    #       ChordChange(chord='C', timestamp=0.743038548),
+    #       ChordChange(chord='Am7b5', timestamp=8.54494331),...]
 
 Extract from many files with multiprocessing::
 
@@ -37,6 +40,11 @@ Extract from many files with multiprocessing::
     clear_conversion_cache()
     res = chordino.extract_many(files_to_extract_from, callback=save_to_db_cb, num_extractors=2,
                                 num_preprocessors=2, max_files_in_cache=10, stop_on_error=False)
+    # => LabelledChordSequence(
+    #	    id='/tmp/extractor/d8b8ab2f719e8cf40e7ec01abd116d3a',
+    #	    sequence=[ChordChange(chord='N', timestamp=0.371519274),
+    #	        ChordChange(chord='C', timestamp=0.743038548),
+    #	        ChordChange(chord='Am7b5', timestamp=8.54494331),...])
 """
 
 from .base import ChordExtractor, clear_conversion_cache

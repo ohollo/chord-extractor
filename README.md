@@ -19,8 +19,8 @@ additional techniques.
   
 ## Installation
 The package is hosted on PyPI, but prior to installing that there are a few prerequisite steps. The following
-instructions assume the use of Linux, and this is the recommended type of OS to use. That said, equivalent steps may be
-used, e.g. if you are using another OS.
+instructions assume the latest versions of Ubuntu, and it is recommended to use a modern 64-bit Linux system. 
+That said, equivalent steps should work if you are using another OS.
 - `sudo apt-get install libsndfile1` - To read sound files.
 - (OPTIONAL) `sudo apt-get install timidity` - If wanting to extract chords from MIDIs (timidity converts midi to wav files).
 - (OPTIONAL) `sudo apt-get install ffmpeg` - If wanting to extract from mp3s
@@ -32,8 +32,8 @@ After that you are ready to run
 pip install chord-extractor
 ```
   
-Included in the installation is a compiled library for Chordino. If you are using Linux 64-bit, chord-extractor will
-default to using this binary. If you require a [different version of the binary](http://www.isophonics.net/nnls-chroma), 
+> **_NOTE:_** Included in the installation is a compiled library for Chordino. If you are using a Linux 64-bit OS, 
+> chord-extractor will default to using this binary. If you require a [different version of the binary](http://www.isophonics.net/nnls-chroma), 
 for example if using another OS, please set the environment variable VAMP_PATH to point to the directory with the 
 downloaded binary. 
   
@@ -52,6 +52,9 @@ conversion_file_path = chordino.preprocess('/some_path/some_song.mid')
 
 # Run extraction
 chords = chordino.extract(conversion_file_path)
+# => [  ChordChange(chord='N', timestamp=0.371519274), 
+#       ChordChange(chord='C', timestamp=0.743038548), 
+#       ChordChange(chord='Am7b5', timestamp=8.54494331),...]
 ```
 
 To perform extraction of many files, even with various file types, we can pass a list of files in a single 
@@ -81,6 +84,11 @@ clear_conversion_cache()
 # Run bulk extraction
 res = chordino.extract_many(files_to_extract_from, callback=save_to_db_cb, num_extractors=2,
                             num_preprocessors=2, max_files_in_cache=10, stop_on_error=False)
+# => LabelledChordSequence(
+#	id='/tmp/extractor/d8b8ab2f719e8cf40e7ec01abd116d3a', 
+#	sequence=[ChordChange(chord='N', timestamp=0.371519274), 
+#	    ChordChange(chord='C', timestamp=0.743038548), 
+#	    ChordChange(chord='Am7b5', timestamp=8.54494331),...])
 ```
 
 If you want to implement your own extraction logic and/or add functionality to convert from another file format, whilst
