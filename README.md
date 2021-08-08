@@ -3,18 +3,18 @@
 
 Python library for extracting chord sequences from sound files of multiple formats with the option of
 leveraging multiprocessing to source data from many files quickly. The extraction process
-wraps [Chordino](http://www.isophonics.net/nnls-chroma) but is extensible to easily incorporate 
+wraps [Chordino](https://code.soundsoftware.ac.uk/projects/nnls-chroma/) but is extensible to easily incorporate 
 additional techniques.
 
 ## Why?
 - Primarily intended for those analysing musical pieces and their harmonic progressions. 
-- [Chordino](http://www.isophonics.net/nnls-chroma) is a C++ [Vamp Plugin](https://vamp-plugins.org/) for extracting chords but even with the helpful 
+- [Chordino](https://code.soundsoftware.ac.uk/projects/nnls-chroma/) is a C++ [Vamp Plugin](https://vamp-plugins.org/) for extracting chords but even with the helpful 
   [vamp](https://pypi.org/project/vamp/) Python wrapper, it is not trivial to set everything up. This project
   aims to help clarify the prerequisites and get the user up and running with extracting chords with as little fuss as possible.
 - Chord extraction of many files is time-consuming. This library gives the option of parallelization (on a particular
   machine) to cut the overall processing time considerably.   
 - There are certain music files that are readily available but need converting prior to using the plugin (e.g. MIDI). 
-  This preprocessing is also included and can also be extended to convert other formats or other tasks that can take  
+  This preprocessing is also included and can also be extended to convert other formats or other tasks that can take 
   advantage of multiprocessing.
   
 ## Installation
@@ -33,8 +33,9 @@ pip install chord-extractor
 ```
   
 > **_NOTE:_** Included in the installation is a compiled library for Chordino. If you are using a Linux 64-bit OS, 
-> chord-extractor will default to using this binary. If you require a [different version of the binary](http://www.isophonics.net/nnls-chroma), 
-for example if using another OS, please set the environment variable VAMP_PATH to point to the directory with the 
+> chord-extractor will default to using this binary. If you require a different version of the binary (i.e. you are 
+> using a different OS), please download the [Vamp plugin pack installer]( https://code.soundsoftware.ac.uk/projects/vamp-plugin-pack) 
+> for example if using another OS, please set the environment variable VAMP_PATH to point to the directory with the 
 downloaded binary. 
   
 ## Usage

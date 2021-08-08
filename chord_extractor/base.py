@@ -89,7 +89,8 @@ class ChordExtractor(ABC):
          is reached).
         :param stop_on_error: If True, an error encountered during a single extraction will stop the overall
          extraction multiprocessing, else an error will cause a None result to be returned for a particular input file.
-        :return: List of tuples, each with the extraction results and original filepath
+        :return: List of tuples, each with the extraction results and id being the file that the extraction was taken
+         from.
         """
         m = mp.Manager()
         extract_q = m.Queue()

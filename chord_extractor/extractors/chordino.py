@@ -10,8 +10,13 @@ import logging
 
 _log = logging.getLogger(__name__)
 
-if not os.getenv('VAMP_PATH') and sys.platform == 'linux' and sys.maxsize > 2**32:
+if not os.getenv('VAMP_PATH') and sys.platform == 'linux' and sys.maxsize > 2 ** 32:
     os.environ['VAMP_PATH'] = os.path.dirname(resource_filename('chord_extractor', '_lib/nnls-chroma.so'))
+elif not os.getenv('VAMP_PATH'):
+    _log.warning('Please make sure VAMP_PATH is specified pointing to the directory containing the '
+                 'appropriate compiled library for Chordino. '
+                 'This can be sourced by using the Vamp Plugin Pack installer at '
+                 'https://code.soundsoftware.ac.uk/projects/vamp-plugin-pack')
 
 
 class TuningMode(Enum):
@@ -44,6 +49,7 @@ class Chordino(ChordExtractor):
     :param kwargs: Any other parameters that may become available to the chordino vamp plugin. Param keys are the
      vamp identifier.
     """
+
     def __init__(self,
                  use_nnls: bool = True,
                  roll_on: float = 1,
@@ -74,8 +80,7 @@ class Chordino(ChordExtractor):
         :return: List of chord changes for the sound file
         """
         data, rate = librosa.load(file, **kwargs)
-        _log.info('Submitting {} to Chordino for chord extraction.')
+        _log.info('Submitting {} to Chordino for chord extraction.'.format(file))
         chords = vamp.collect(data, rate, 'nnls-chroma:chordino', parameters=self._params)
         return [ChordChange(timestamp=float(change['timestamp']),
                             chord=change['label']) for change in chords['list']]
-
