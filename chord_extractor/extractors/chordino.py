@@ -1,3 +1,23 @@
+#!/usr/bin/env python
+
+# Chord Extractor
+# Copyright (C) 2021-22  Oliver Holloway
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
 from chord_extractor.base import ChordExtractor, ChordChange
 import librosa
 import vamp
@@ -82,5 +102,6 @@ class Chordino(ChordExtractor):
         data, rate = librosa.load(file, **kwargs)
         _log.info('Submitting {} to Chordino for chord extraction.'.format(file))
         chords = vamp.collect(data, rate, 'nnls-chroma:chordino', parameters=self._params)
+        _log.info('Chord extraction for {} complete.'.format(file))
         return [ChordChange(timestamp=float(change['timestamp']),
                             chord=change['label']) for change in chords['list']]

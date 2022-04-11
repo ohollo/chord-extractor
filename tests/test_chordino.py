@@ -11,12 +11,12 @@ if not os.path.exists(out_dir):
     os.makedirs(out_dir)
 
 
-def _get_files_in_dir(dir):
-    return [abspath(join(dir, f)) for f in os.listdir(dir) if (isfile(join(dir, f)))]
+def _get_files_in_dir(dir_):
+    return [abspath(join(dir_, f)) for f in os.listdir(dir_) if (isfile(join(dir_, f)))]
 
 
-def _remove_files(dir):
-    for f in _get_files_in_dir(dir):
+def _remove_files(dir_):
+    for f in _get_files_in_dir(dir_):
         os.remove(f)
 
 

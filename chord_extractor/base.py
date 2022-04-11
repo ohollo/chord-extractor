@@ -1,3 +1,22 @@
+#!/usr/bin/env python
+
+# Chord Extractor
+# Copyright (C) 2021-22  Oliver Holloway
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 from abc import ABC, abstractmethod
 from typing import List, Callable, Optional
 import multiprocessing as mp
@@ -6,6 +25,8 @@ import logging
 import os
 import glob
 from .outputs import ChordChange, LabelledChordSequence
+import signal
+
 
 _log = logging.getLogger(__name__)
 _tmp_root = os.getenv('EXTRACTOR_TEMP_FILE_PATH', '/tmp/')
@@ -25,6 +46,11 @@ def clear_conversion_cache():
     files = glob.glob(os.path.join(_tmp_dir, '*'))
     for f in files:
         os.remove(f)
+
+
+def _error_cb(e):
+    _log.exception(e)
+    os.kill(os.getpid(), signal.SIGKILL)
 
 
 class ChordExtractor(ABC):
@@ -73,10 +99,10 @@ class ChordExtractor(ABC):
         to extraction can also be done in parallel with the extractions.
 
         Files can be a mix of different file formats. If a file is of a format that needs to be converted in
-        preprocessing, the conversion will be passed to a queue for extraction. Otherwise the original file will be
-        queued. Any conversions are cached in a temporary folder specified using the environment variable
+        preprocessing, it is the conversion that is passed to a queue for extraction. Otherwise the original file will
+        be queued. Any conversions are cached in a temporary folder specified using the environment variable
         EXTRACTOR_TEMP_FILE_PATH (/tmp if not specified). Note, if in any subsequent extract runs, an existing file
-        conversion is find in the temporary directory, a new conversion will be skipped and the existing one used.
+        conversion is found in the temporary directory, a new conversion will be skipped and the existing one used.
 
         :param files: List of paths to files we wish to extract chords for
         :param callback: An optional callable that is called when chords have been extracted from a particular file.
@@ -88,7 +114,8 @@ class ChordExtractor(ABC):
          otherwise conversions are deleted once extractions are performed (extractions are paused if the file limit
          is reached).
         :param stop_on_error: If True, an error encountered during a single extraction will stop the overall
-         extraction multiprocessing, else an error will cause a None result to be returned for a particular input file.
+         extraction process. Be warned, this means that the parent process will be killed. If False, an error will
+         cause a None result to be returned in the sequence attribute for a particular LabelledChordSequence result.
         :return: List of tuples, each with the extraction results and id being the file that the extraction was taken
          from.
         """
@@ -108,7 +135,8 @@ class ChordExtractor(ABC):
                                                                  kwds={'remove_path': remove_path
                                                                                       and not not max_files_in_cache,
                                                                        'stop_on_error': stop_on_error},
-                                                                 callback=callback)))
+                                                                 callback=callback,
+                                                                 error_callback=_error_cb)))
 
         for c in conversions:
             c.get()
@@ -120,11 +148,12 @@ class ChordExtractor(ABC):
         try:
             res = self.extract(path)
         except Exception as e:
+            _log.error('Error has been encountered with extracting chords from {}.'.format(path))
             if stop_on_error:
                 raise
-            _log.warning('Error has been encountered with extracting chords from {}. '
-                         'Proceeding to next extraction'.format(path))
             _log.exception(e)
+            _log.info('Proceeding to next extraction')
+
         finally:
             file_count_q.get()
         if remove_path:
