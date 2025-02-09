@@ -1,2 +1,2 @@
 vamp==1.1.0
-librosa==0.8.0
+librosa==0.10.2

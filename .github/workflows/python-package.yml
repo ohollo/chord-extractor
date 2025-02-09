@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.8, 3.9, "3.10", "3.11"]
 
     steps:
     - uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest
         python -m pip install wheel
-        python -m pip install numpy==1.19.2
+        python -m pip install numpy==1.24.4
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |

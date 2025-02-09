@@ -39,7 +39,10 @@ def midi_to_wav(midi_path: str, wav_to_dir: str):
     wav_file = os.path.join(wav_to_dir, file_name)
     if not os.path.isfile(wav_file):
         _log.info('Running timidity on {} to create {}'.format(midi_path, wav_file))
-        subprocess.run(['timidity', midi_path, '-Ow', '-o', wav_file])
+        result = subprocess.run(['timidity', midi_path, '-Ow', '-o', wav_file], stdout=subprocess.PIPE, text=True, errors="replace")
+        if "Not a MIDI file!" in result.stdout:
+            _log.error('Invalid midi file at {}'.format(midi_path))
+            return None
     else:
         _log.info('Returning already existing temporary wav file {}'.format(wav_file))
     return wav_file
