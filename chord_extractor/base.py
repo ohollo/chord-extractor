@@ -17,33 +17,35 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from abc import ABC, abstractmethod
-from typing import List, Callable, Optional
-import multiprocessing as mp
-from .converters import midi_to_wav
-import logging
-import os
 import glob
-from .outputs import ChordChange, LabelledChordSequence
+import logging
+import multiprocessing as mp
+import os
 import signal
+from abc import ABC, abstractmethod
+from typing import Callable, List, Optional
 
+from .converters import midi_to_wav
+from .outputs import ChordChange, LabelledChordSequence
 
 _log = logging.getLogger(__name__)
-_tmp_root = os.getenv('EXTRACTOR_TEMP_FILE_PATH', '/tmp/')
-_tmp_dir = os.path.join(_tmp_root, 'extractor/')
+_tmp_root = os.getenv("EXTRACTOR_TEMP_FILE_PATH", "/tmp/")
+_tmp_dir = os.path.join(_tmp_root, "extractor/")
 if not os.path.exists(_tmp_dir):
     os.makedirs(_tmp_dir)
 
 
-def _convert_to_intermediate_file(instance, path, extract_q, file_count_q):
+def _convert_to_intermediate_file(
+    instance, path, extract_q, file_count_q, verbose: bool = True
+):
     file_count_q.put(path)
-    intermediate_file = getattr(instance, 'preprocess')(path)
+    intermediate_file = getattr(instance, "preprocess")(path, verbose)
     extract_q.put((intermediate_file, True) if intermediate_file else (path, False))
 
 
 def clear_conversion_cache():
     """Clear the temporary directory containing sound file conversions."""
-    files = glob.glob(os.path.join(_tmp_dir, '*'))
+    files = glob.glob(os.path.join(_tmp_dir, "*"))
     for f in files:
         os.remove(f)
 
@@ -69,7 +71,7 @@ class ChordExtractor(ABC):
         :return: List of chord changes for the sound file
         """
 
-    def preprocess(self, path: str) -> Optional[str]:
+    def preprocess(self, path: str, verbose: bool = True) -> Optional[str]:
         """
         Run any preprocessing steps based on the location path of the sound file provided. Primarily this is used to
         convert the file at the path, based on its file extension to a file usable by the extract method. However, an
@@ -79,20 +81,24 @@ class ChordExtractor(ABC):
         (conversion cache).
 
         :param path: Path to the file
+        :param verbose: Whether to print timidity output
         :return: Return file path to output file of conversion if conversion has happened, else None
         """
         ext = os.path.splitext(path)[1]
-        if ext in ['.mid', '.midi']:
-            return midi_to_wav(path, _tmp_dir)
+        if ext in [".mid", ".midi"]:
+            return midi_to_wav(path, _tmp_dir, verbose)
         return None
 
-    def extract_many(self,
-                     files: List[str],
-                     callback: Callable[[LabelledChordSequence], None] = None,
-                     num_extractors: int = 1,
-                     num_preprocessors: int = 1,
-                     max_files_in_cache: int = 50,
-                     stop_on_error=False) -> List[LabelledChordSequence]:
+    def extract_many(
+        self,
+        files: List[str],
+        callback: Callable[[LabelledChordSequence], None] = None,
+        num_extractors: int = 1,
+        num_preprocessors: int = 1,
+        max_files_in_cache: int = 50,
+        stop_on_error=False,
+        verbose: bool = True,
+    ) -> List[LabelledChordSequence]:
         """
         Extract chords from a list of files. As opposed to looping over the .extract method, this one gives the option
         to run many extractions in parallel. Furthermore any file conversions that have to be done as a prerequisite
@@ -116,6 +122,7 @@ class ChordExtractor(ABC):
         :param stop_on_error: If True, an error encountered during a single extraction will stop the overall
          extraction process. Be warned, this means that the parent process will be killed. If False, an error will
          cause a None result to be returned in the sequence attribute for a particular LabelledChordSequence result.
+        :param verbose: Whether to print timidity output
         :return: List of tuples, each with the extraction results and id being the file that the extraction was taken
          from.
         """
@@ -124,35 +131,53 @@ class ChordExtractor(ABC):
         file_count_q = m.Queue(maxsize=max_files_in_cache)
         conversion_pool = mp.Pool(processes=num_preprocessors)
         extractor_pool = mp.Pool(processes=num_extractors)
-        conversions = [conversion_pool.apply_async(_convert_to_intermediate_file,
-                                                   args=(self, file, extract_q, file_count_q))
-                       for file in files]
+        conversions = [
+            conversion_pool.apply_async(
+                _convert_to_intermediate_file,
+                args=(self, file, extract_q, file_count_q, verbose),
+            )
+            for file in files
+        ]
         extractions = []
         while len(extractions) < len(files):
             path, remove_path = extract_q.get()
-            extractions.append((path, extractor_pool.apply_async(self._consume,
-                                                                 args=(path, file_count_q),
-                                                                 kwds={'remove_path': remove_path
-                                                                                      and not not max_files_in_cache,
-                                                                       'stop_on_error': stop_on_error},
-                                                                 callback=callback,
-                                                                 error_callback=_error_cb)))
+            extractions.append(
+                (
+                    path,
+                    extractor_pool.apply_async(
+                        self._consume,
+                        args=(path, file_count_q),
+                        kwds={
+                            "remove_path": remove_path and not not max_files_in_cache,
+                            "stop_on_error": stop_on_error,
+                        },
+                        callback=callback,
+                        error_callback=_error_cb,
+                    ),
+                )
+            )
 
         for c in conversions:
             c.get()
         res = [a[1].get() for a in extractions]
         return res
 
-    def _consume(self, path, file_count_q, remove_path=False, stop_on_error=False) -> LabelledChordSequence:
+    def _consume(
+        self, path, file_count_q, remove_path=False, stop_on_error=False
+    ) -> LabelledChordSequence:
         res = None
         try:
             res = self.extract(path)
         except Exception as e:
-            _log.error('Error has been encountered with extracting chords from {}.'.format(path))
+            _log.error(
+                "Error has been encountered with extracting chords from {}.".format(
+                    path
+                )
+            )
             if stop_on_error:
                 raise
             _log.exception(e)
-            _log.info('Proceeding to next extraction')
+            _log.info("Proceeding to next extraction")
 
         finally:
             file_count_q.get()
