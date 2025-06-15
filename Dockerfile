@@ -1,4 +1,4 @@
-ARG ver=3.8
+ARG ver=3.6
 
 FROM python:$ver-slim
 
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     "g++" libsndfile1 timidity ffmpeg \
 && rm -rf /var/lib/apt/lists/* \
 && python -m pip install --upgrade pip \
-&& python -m pip install flake8 pytest wheel numpy==1.19.2\
+&& python -m pip install flake8 pytest wheel numpy==1.24.4 \
 && python -m pip install -r requirements.txt \
 # stop the build if there are Python syntax errors or undefined names
 && flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics \
