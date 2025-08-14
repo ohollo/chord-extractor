@@ -1,25 +1,21 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>chord_extractor.extractors.chordino &#8212; chord-extractor  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/classic.css?v=2bf1fcf8" />
     
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -60,15 +56,15 @@
 <span class="c1"># 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</span>
 
 
-<span class="kn">from</span> <span class="nn">chord_extractor.base</span> <span class="kn">import</span> <span class="n">ChordExtractor</span><span class="p">,</span> <span class="n">ChordChange</span>
-<span class="kn">import</span> <span class="nn">librosa</span>
-<span class="kn">import</span> <span class="nn">vamp</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chord_extractor.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChordExtractor</span><span class="p">,</span> <span class="n">ChordChange</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">librosa</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">vamp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pkg_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_filename</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -81,22 +77,30 @@
                  <span class="s1">&#39;https://code.soundsoftware.ac.uk/projects/vamp-plugin-pack&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TuningMode"><a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.TuningMode">[docs]</a><span class="k">class</span> <span class="nc">TuningMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Options for Tuning Mode parameter (see Chordino doc)&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TuningMode">
+<a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.TuningMode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TuningMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for Tuning Mode parameter (see Chordino doc)&quot;&quot;&quot;</span>
     <span class="n">GLOBAL</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">LOCAL</span> <span class="o">=</span> <span class="mi">1</span></div>
 
 
-<div class="viewcode-block" id="ChromaNormalization"><a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.ChromaNormalization">[docs]</a><span class="k">class</span> <span class="nc">ChromaNormalization</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Options for Chroma Normalization parameter (see Chordino doc)&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ChromaNormalization">
+<a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.ChromaNormalization">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChromaNormalization</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for Chroma Normalization parameter (see Chordino doc)&quot;&quot;&quot;</span>
     <span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">MAX</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">L1</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">L2</span> <span class="o">=</span> <span class="mi">3</span></div>
 
 
-<div class="viewcode-block" id="Chordino"><a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.Chordino">[docs]</a><span class="k">class</span> <span class="nc">Chordino</span><span class="p">(</span><span class="n">ChordExtractor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Chordino">
+<a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.Chordino">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Chordino</span><span class="p">(</span><span class="n">ChordExtractor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for extracting chords using Chordino (http://www.isophonics.net/nnls-chroma). All parameters are those</span>
 <span class="sd">    passed to Chordino. You can see further details of what they mean in the</span>
 <span class="sd">    Chordino -&gt; Parameters section in the above link. The defaults here are the suggested parameter settings for</span>
@@ -112,7 +116,7 @@
 <span class="sd">     vamp identifier.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">use_nnls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                  <span class="n">roll_on</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                  <span class="n">tuning_mode</span><span class="p">:</span> <span class="n">TuningMode</span> <span class="o">=</span> <span class="n">TuningMode</span><span class="o">.</span><span class="n">GLOBAL</span><span class="p">,</span>
@@ -131,8 +135,10 @@
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Chordino.extract"><a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.Chordino.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ChordChange</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Chordino.extract">
+<a class="viewcode-back" href="../../../index.html#chord_extractor.extractors.Chordino.extract">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ChordChange</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract chord changes from a particular file. The file is loaded into librosa, therefore takes sound files</span>
 <span class="sd">        supported by librosa (which uses audioread and soundfile). This includes .wav, .mp3, .ogg and others.</span>
 
@@ -146,16 +152,18 @@
         <span class="n">chords</span> <span class="o">=</span> <span class="n">vamp</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="s1">&#39;nnls-chroma:chordino&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
         <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Chord extraction for </span><span class="si">{}</span><span class="s1"> complete.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">ChordChange</span><span class="p">(</span><span class="n">timestamp</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">change</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]),</span>
-                            <span class="n">chord</span><span class="o">=</span><span class="n">change</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">change</span> <span class="ow">in</span> <span class="n">chords</span><span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">]]</span></div></div>
+                            <span class="n">chord</span><span class="o">=</span><span class="n">change</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">change</span> <span class="ow">in</span> <span class="n">chords</span><span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">]]</span></div>
+</div>
+
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
@@ -163,13 +171,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -184,8 +192,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, Oliver Holloway.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    &#169; Copyright 2021, Oliver Holloway.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     </div>
   </body>
 </html>
