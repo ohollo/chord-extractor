@@ -58,7 +58,16 @@ class ChordExtractor(ABC):
     Abstract class for extracting chords from sound files. It also provides functionality for sound file conversion,
     which can be added to by overriding .convert. This is useful as implementations using .extract
     may take only certain file formats, and integrating conversion logic here enables it to be parallelized.
+
+    :param suppress_midi_output: If True, suppress the (often verbose) console output produced by Timidity when
+     converting midi files as part of preprocessing, e.g. internal details of the midi file such as
+     track/lyric/text events. Defaults to False, which preserves Timidity's normal console output.
     """
+
+    suppress_midi_output: bool = False
+
+    def __init__(self, suppress_midi_output: bool = False):
+        self.suppress_midi_output = suppress_midi_output
 
     @abstractmethod
     def extract(self, file: str) -> List[ChordChange]:
@@ -83,7 +92,7 @@ class ChordExtractor(ABC):
         """
         ext = os.path.splitext(path)[1]
         if ext in ['.mid', '.midi']:
-            return midi_to_wav(path, _tmp_dir)
+            return midi_to_wav(path, _tmp_dir, suppress_output=self.suppress_midi_output)
         return None
 
     def extract_many(self,

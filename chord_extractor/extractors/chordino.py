@@ -66,6 +66,9 @@ class Chordino(ChordExtractor):
     :param spectral_whitening: Spectral whitening (range: 0 - 1)
     :param spectral_shape: Spectral shape (range: 0.5 - 0.9)
     :param boost_n_likelihood: Boost likelihood of the N (no chord) label
+    :param suppress_midi_output: If True, suppress the (often verbose) console output produced by Timidity when
+     converting midi files as part of preprocessing, e.g. internal details of the midi file such as
+     track/lyric/text events. Defaults to False, which preserves Timidity's normal console output.
     :param kwargs: Any other parameters that may become available to the chordino vamp plugin. Param keys are the
      vamp identifier.
     """
@@ -77,8 +80,9 @@ class Chordino(ChordExtractor):
                  spectral_whitening: float = 1,
                  spectral_shape=0.7,
                  boost_n_likelihood: float = 0.1,
+                 suppress_midi_output: bool = False,
                  **kwargs):
-        super().__init__()
+        super().__init__(suppress_midi_output=suppress_midi_output)
         self._params = {
             'useNNLS': int(use_nnls),
             'rollon': roll_on,

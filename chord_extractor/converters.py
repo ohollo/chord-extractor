@@ -26,7 +26,7 @@ _log = logging.getLogger(__name__)
 _ERROR_SIGNAL_TEXT = "Not a MIDI file"
 
 
-def midi_to_wav(midi_path: str, wav_to_dir: str) -> Optional[str]:
+def midi_to_wav(midi_path: str, wav_to_dir: str, suppress_output: bool = False) -> Optional[str]:
     """
     Convert midi at given path to wav file and save in specified output directory. This is done using
     Timidity (http://timidity.sourceforge.net/). Note that no exception is raised when an invalid midi_path is given
@@ -34,6 +34,9 @@ def midi_to_wav(midi_path: str, wav_to_dir: str) -> Optional[str]:
 
     :param midi_path: Path to input midi file
     :param wav_to_dir: Path to the output directory
+    :param suppress_output: If True, suppress the console output Timidity produces while converting (this can be
+     quite verbose, printing out internal details of the midi file such as track/lyric/text events). Defaults to
+     False, which preserves Timidity's normal console output.
     :return: Path to the new wav file. None if an invalid midi file is passed.
     """
     base = os.path.basename(midi_path)
@@ -41,7 +44,9 @@ def midi_to_wav(midi_path: str, wav_to_dir: str) -> Optional[str]:
     wav_file = os.path.join(wav_to_dir, file_name)
     if not os.path.isfile(wav_file):
         _log.info('Running timidity on {} to create {}'.format(midi_path, wav_file))
-        result = subprocess.run(['timidity', midi_path, '-Ow', '-o', wav_file], stdout=subprocess.PIPE, text=True, errors="replace")
+        stderr = subprocess.DEVNULL if suppress_output else None
+        result = subprocess.run(['timidity', midi_path, '-Ow', '-o', wav_file], stdout=subprocess.PIPE,
+                                stderr=stderr, text=True, errors="replace")
         if _ERROR_SIGNAL_TEXT in result.stdout:
             _log.error('Invalid midi file at {}'.format(midi_path))
             return None

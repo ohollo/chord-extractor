@@ -46,7 +46,12 @@ Extract chords from a single file:
 from chord_extractor.extractors import Chordino
 
 # Setup Chordino with one of several parameters that can be passed
-chordino = Chordino(roll_on=1)  
+chordino = Chordino(roll_on=1)
+
+# By default, converting a midi file to wav (as part of preprocessing) will print Timidity's often verbose
+# console output (e.g. internal midi details such as lyrics/text events). Pass suppress_midi_output=True to
+# silence this:
+# chordino = Chordino(roll_on=1, suppress_midi_output=True)
 
 # Optional, only if we need to extract from a file that isn't accepted by librosa
 conversion_file_path = chordino.preprocess('/some_path/some_song.mid')
